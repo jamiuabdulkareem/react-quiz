@@ -3,6 +3,8 @@ import Header from "./component/Header";
 import Main from "./component/Main";
 import Loader from "./component/Loader";
 import Error from "./component/Error";
+import StartScreen from "./component/startScreen";
+import Question from "./component/Question";
 
 // useReducer initialState
 
@@ -11,6 +13,12 @@ const initialState = {
 
   // 'loading', "error", "ready", "active", finished
   status: "loading",
+  // get the current question
+  index: 0,
+  // get the answer
+  answer: null,
+  // get point
+  points: 0,
 };
 
 function reducer(state, action) {
@@ -18,7 +26,7 @@ function reducer(state, action) {
     case "dataReceived":
       return {
         ...state,
-        question: action.payload,
+        questions: action.payload,
         status: "ready",
       };
 
@@ -28,13 +36,31 @@ function reducer(state, action) {
         status: "error",
       };
 
+    case "start":
+      return {
+        ...state,
+        status: "active",
+      };
+
+    case "newAnswer":
+      return {
+        ...state,
+        answer: action.payload,
+      };
+
     default:
       throw new Error("Action unknown");
   }
 }
 
 export default function App() {
-  const [{ question, status }, dispatch] = useReducer(reducer, initialState);
+  const [{ questions, status, index, answer }, dispatch] = useReducer(
+    reducer,
+    initialState
+  );
+
+  // Question length calc
+  const numQuestions = questions.length;
 
   // Fetch question api
   useEffect(function () {
@@ -51,6 +77,16 @@ export default function App() {
       <Main>
         {status === "loading" && <Loader />}
         {status === "error" && <Error />}
+        {status === "ready" && (
+          <StartScreen numQuestions={numQuestions} dispatch={dispatch} />
+        )}
+        {status === "active" && (
+          <Question
+            question={questions[index]}
+            dispatch={dispatch}
+            answer={answer}
+          />
+        )}
       </Main>
     </div>
   );
