@@ -7,6 +7,7 @@ import StartScreen from "./component/startScreen";
 import Question from "./component/Question";
 import NextButton from "./component/NextButton";
 import Progress from "./component/Progress";
+import FinishScreen from "./component/FinishScreen";
 
 // useReducer initialState
 
@@ -64,6 +65,12 @@ function reducer(state, action) {
         answer: null,
       };
 
+    case "finish":
+      return {
+        ...state,
+        status: "finished",
+      };
+
     default:
       throw new Error("Action unknown");
   }
@@ -115,8 +122,17 @@ export default function App() {
               dispatch={dispatch}
               answer={answer}
             />
-            <NextButton dispatch={dispatch} answer={answer} />
+            <NextButton
+              dispatch={dispatch}
+              answer={answer}
+              numQuestions={numQuestions}
+              index={index}
+            />
           </>
+        )}
+
+        {status === "finished" && (
+          <FinishScreen points={points} maxPossiblePoints={maxPossiblePoints} />
         )}
       </Main>
     </div>
