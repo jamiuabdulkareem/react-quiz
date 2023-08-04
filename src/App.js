@@ -14,14 +14,16 @@ import FinishScreen from "./component/FinishScreen";
 const initialState = {
   questions: [],
 
-  // 'loading', "error", "ready", "active", finished
+  // 'loading', "error", "ready", "active", finished state
   status: "loading",
-  // get the current question
+  // get the current question state
   index: 0,
-  // get the answer
+  // get the answer state
   answer: null,
-  // get point
+  // get point state
   points: 0,
+  // get highscore state
+  highscore: 0,
 };
 
 function reducer(state, action) {
@@ -69,7 +71,25 @@ function reducer(state, action) {
       return {
         ...state,
         status: "finished",
+        // calculate the high score
+        highscore:
+          state.points > state.highscore ? state.points : state.highscore,
       };
+    case "restart":
+      return {
+        ...initialState,
+        questions: state.questions,
+        status: "ready",
+      };
+    // return {
+    //   ...state,
+    //   questions: state.questions,
+    //   status: "ready",
+    //   index: 0,
+    //   answer: null,
+    //   points: 0,
+    //   highscore: 0,
+    // };
 
     default:
       throw new Error("Action unknown");
@@ -77,10 +97,8 @@ function reducer(state, action) {
 }
 
 export default function App() {
-  const [{ questions, status, index, answer, points }, dispatch] = useReducer(
-    reducer,
-    initialState
-  );
+  const [{ questions, status, index, answer, points, highscore }, dispatch] =
+    useReducer(reducer, initialState);
 
   // Question length calc
   const numQuestions = questions.length;
@@ -132,7 +150,12 @@ export default function App() {
         )}
 
         {status === "finished" && (
-          <FinishScreen points={points} maxPossiblePoints={maxPossiblePoints} />
+          <FinishScreen
+            points={points}
+            maxPossiblePoints={maxPossiblePoints}
+            highscore={highscore}
+            dispatch={dispatch}
+          />
         )}
       </Main>
     </div>
