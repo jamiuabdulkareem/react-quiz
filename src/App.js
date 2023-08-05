@@ -13,6 +13,8 @@ import Timer from "./component/Timer";
 
 // useReducer initialState
 
+const SEC_PER_QUESTION = 30;
+
 const initialState = {
   questions: [],
 
@@ -27,7 +29,7 @@ const initialState = {
   // get highscore state
   highscore: 0,
   // timer state
-  secondsRemaining: 10,
+  secondsRemaining: null,
 };
 
 function reducer(state, action) {
@@ -49,6 +51,8 @@ function reducer(state, action) {
       return {
         ...state,
         status: "active",
+        // Calculate timeer
+        secondsRemaining: state.questions.length * SEC_PER_QUESTION,
       };
 
     case "newAnswer":
